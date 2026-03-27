@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>NMIMS TECHFEST 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red: #e8000f;
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: rgba(232,0,15,0.3);
+    --text: #f0f0f0;
+    --text-dim: #888;
+    --mono: 'Share Tech Mono', monospace;
+    --display: 'Orbitron', sans-serif;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    overflow-x: hidden;
+  }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px);
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  .screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+    padding: 2rem 1.25rem 2.5rem;
+    animation: fadeIn 0.35s ease;
+  }
+  .screen.active { display: flex; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .back-btn {
+    align-self: flex-start;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    background: none;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    padding: 0.25rem 0;
+    margin-bottom: 1.25rem;
+    transition: color 0.15s;
+  }
+  .back-btn:hover { color: var(--red); }
+  .back-btn:hover svg { transform: translateX(-2px); }
+  .back-btn svg { transition: transform 0.15s; }
+
+  .logo-wrap { text-align: center; width: 100%; }
+  .logo-line {
+    font-family: var(--display);
+    font-size: 0.58rem;
+    letter-spacing: 0.35em;
+    color: var(--red);
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+  }
+  .logo-main {
+    font-family: var(--display);
+    font-size: clamp(1.6rem, 7vw, 2.2rem);
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    color: var(--text);
+    line-height: 1.1;
+  }
+  .logo-main span { color: var(--red); }
+  .logo-year {
+    font-family: var(--display);
+    font-size: 0.62rem;
+    letter-spacing: 0.5em;
+    color: var(--text-dim);
+    margin-top: 0.25rem;
+  }
+
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--red), transparent);
+    margin: 1.25rem 0;
+  }
+
+  .btn {
+    font-family: var(--display);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    background: var(--red);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 0.9rem 2rem;
+    cursor: pointer;
+    transition: transform 0.1s;
+    width: 100%;
+    max-width: 400px;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn.outline {
+    background: transparent;
+    border: 1px solid var(--red);
+    color: var(--red);
+  }
+  .btn.upload {
+    background: transparent;
+    border: 2px solid var(--red);
+    color: var(--red);
+    font-size: 0.82rem;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    text-decoration: none;
+    border-radius: 4px;
+    font-family: var(--display);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    width: 100%;
+    max-width: 400px;
+  }
+  .btn.upload:active { transform: scale(0.97); }
+
+  /* HOME */
+  #screen-home { justify-content: center; }
+
+  .boot-terminal {
+    width: 100%;
+    max-width: 400px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin: 1.4rem 0;
+  }
+  .boot-line {
+    font-size: 0.7rem;
+    line-height: 2.1;
+    color: var(--text-dim);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .boot-line.done { opacity: 1; }
+  .boot-line .ok { color: var(--red); }
+
+  .how-label-row {
+    font-family: var(--display);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    margin-bottom: 0.85rem;
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .how-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem;
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 1.5rem;
+  }
+  .how-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.9rem 0.7rem;
+    text-align: center;
+  }
+  .how-icon { font-size: 1.5rem; display: block; margin-bottom: 0.35rem; }
+  .how-label { font-size: 0.63rem; color: var(--text-dim); line-height: 1.5; }
+  .how-label strong { display: block; color: var(--text); font-size: 0.72rem; margin-bottom: 0.1rem; }
+
+  /* GAME */
+  #screen-game { justify-content: flex-start; }
+
+  .game-topbar {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 420px;
+    margin-bottom: 0.85rem;
+  }
+  .game-title {
+    font-family: var(--display);
+    font-size: 0.58rem;
+    letter-spacing: 0.18em;
+    color: var(--red);
+    flex: 1;
+    text-align: center;
+  }
+  .game-topbar .back-btn { margin-bottom: 0; flex-shrink: 0; }
+
+  .game-hud {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 420px;
+    margin-bottom: 0.75rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.65rem 1rem;
+  }
+  .hud-block { text-align: center; }
+  .hud-label { font-size: 0.55rem; color: var(--text-dim); letter-spacing: 0.1em; }
+  .hud-value { font-family: var(--display); font-size: 1rem; font-weight: 700; color: var(--red); }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .card { aspect-ratio: 1; perspective: 600px; cursor: pointer; }
+  .card-inner {
+    width: 100%; height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 8px;
+  }
+  .card.flipped .card-inner,
+  .card.matched .card-inner { transform: rotateY(180deg); }
+
+  .card-face {
+    position: absolute; inset: 0; border-radius: 8px;
+    backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .card-back { background: var(--surface); border: 1px solid var(--border); }
+  .card-back::after {
+    content: '';
+    width: 46%; height: 46%;
+    border: 1px solid rgba(232,0,15,0.35);
+    border-radius: 3px;
+    display: block;
+    transform: rotate(45deg);
+  }
+  .card-front {
+    background: var(--surface2);
+    border: 1px solid var(--red);
+    transform: rotateY(180deg);
+    font-size: clamp(1.3rem, 5.5vw, 1.8rem);
+  }
+  .card.matched .card-front {
+    background: rgba(232,0,15,0.1);
+    animation: matchPulse 0.35s ease;
+  }
+  @keyframes matchPulse {
+    0%   { transform: rotateY(180deg) scale(1); }
+    50%  { transform: rotateY(180deg) scale(1.07); }
+    100% { transform: rotateY(180deg) scale(1); }
+  }
+  .card.wrong .card-inner { animation: shake 0.38s ease; }
+  @keyframes shake {
+    0%,100% { transform: rotateY(180deg) translateX(0); }
+    25%     { transform: rotateY(180deg) translateX(-4px); }
+    75%     { transform: rotateY(180deg) translateX(4px); }
+  }
+
+  .status-line {
+    font-size: 0.63rem; color: var(--text-dim);
+    height: 1rem; margin-bottom: 0.4rem;
+    letter-spacing: 0.05em; width: 100%; max-width: 420px;
+  }
+
+  /* WIN */
+  #screen-win { justify-content: center; text-align: center; }
+
+  .win-glyph { font-size: 3.2rem; margin-bottom: 0.75rem; animation: glyphPop 0.55s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes glyphPop {
+    0%   { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .win-title {
+    font-family: var(--display);
+    font-size: clamp(1.5rem, 6.5vw, 2rem);
+    font-weight: 900; color: var(--red);
+    letter-spacing: 0.05em; margin-bottom: 0.3rem;
+  }
+  .win-subtitle { font-size: 0.72rem; color: var(--text-dim); }
+
+  .win-stats { display: flex; gap: 1.75rem; justify-content: center; margin: 1.1rem 0; }
+  .win-stat { text-align: center; }
+  .win-stat-val { font-family: var(--display); font-size: 1.5rem; font-weight: 700; color: var(--text); }
+  .win-stat-lbl { font-size: 0.58rem; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; }
+
+  .win-msg { font-size: 0.75rem; color: var(--text-dim); line-height: 1.85; max-width: 300px; margin: 0 auto 1.4rem; }
+  .win-msg strong { color: var(--text); }
+
+  .win-actions { display: flex; flex-direction: column; gap: 0.75rem; width: 100%; max-width: 360px; }
+
+  .particle { position: fixed; pointer-events: none; z-index: 900; }
+</style>
+</head>
+<body>
+
+<!-- ══ HOME ══ -->
+<section class="screen active" id="screen-home">
+  <div class="logo-wrap">
+    <div class="logo-line">NMIMS University</div>
+    <div class="logo-main">TECH<span>FEST</span></div>
+    <div class="logo-year">2 0 2 6</div>
+  </div>
+
+  <div class="boot-terminal">
+    <div class="boot-line" id="bl0">SYS_INIT &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="ok">[ OK ]</span></div>
+    <div class="boot-line" id="bl1">LOADING MODULES &nbsp; <span class="ok">[ OK ]</span></div>
+    <div class="boot-line" id="bl2">MEMORY CHECK &nbsp;&nbsp;&nbsp; <span class="ok">[ OK ]</span></div>
+    <div class="boot-line" id="bl3">NETWORK LINK &nbsp;&nbsp;&nbsp; <span class="ok">[ OK ]</span></div>
+    <div class="boot-line" id="bl4">CHALLENGE READY &nbsp; <span class="ok">[ OK ]</span></div>
+  </div>
+
+  <div class="divider" style="margin:0 0 1rem;"></div>
+  <div class="how-label-row">HOW TO PLAY</div>
+
+  <div class="how-grid">
+    <div class="how-card">
+      <span class="how-icon">🃏</span>
+      <div class="how-label"><strong>Flip & Match</strong>Find all 8 matching pairs</div>
+    </div>
+    <div class="how-card">
+      <span class="how-icon">🧠</span>
+      <div class="how-label"><strong>Use Memory</strong>Cards flip back if unmatched</div>
+    </div>
+    <div class="how-card">
+      <span class="how-icon">⚡</span>
+      <div class="how-label"><strong>Less Moves</strong>Fewer flips = better score</div>
+    </div>
+    <div class="how-card">
+      <span class="how-icon">📸</span>
+      <div class="how-label"><strong>Win & Upload</strong>Share your event memories</div>
+    </div>
+  </div>
+
+  <button class="btn" id="btn-play">LAUNCH CHALLENGE &gt;&gt;</button>
+</section>
+
+<!-- ══ GAME ══ -->
+<section class="screen" id="screen-game">
+  <div class="game-topbar">
+    <button class="back-btn" data-to="screen-home">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      BACK
+    </button>
+    <div class="game-title">NMIMS TECHFEST 2026 &nbsp;·&nbsp; MEMORY PROTOCOL</div>
+    <div style="width:52px;"></div>
+  </div>
+
+  <div class="game-hud">
+    <div class="hud-block">
+      <div class="hud-label">FLIPS</div>
+      <div class="hud-value" id="hud-moves">0</div>
+    </div>
+    <div class="hud-block">
+      <div class="hud-label">MATCHED</div>
+      <div class="hud-value" id="hud-matched">0 / 8</div>
+    </div>
+    <div class="hud-block">
+      <div class="hud-label">TIME</div>
+      <div class="hud-value" id="hud-time">0s</div>
+    </div>
+  </div>
+
+  <div class="status-line" id="status-line">&nbsp;</div>
+  <div class="card-grid" id="card-grid"></div>
+</section>
+
+<!-- ══ WIN ══ -->
+<section class="screen" id="screen-win">
+  <button class="back-btn" data-to="screen-home">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    HOME
+  </button>
+
+  <div class="win-glyph">🏆</div>
+  <div class="win-title">ACCESS GRANTED</div>
+  <div class="win-subtitle">Memory protocol complete.</div>
+  <div class="divider" style="max-width:280px;"></div>
+
+  <div class="win-stats">
+    <div class="win-stat">
+      <div class="win-stat-val" id="res-moves">—</div>
+      <div class="win-stat-lbl">Flips</div>
+    </div>
+    <div class="win-stat">
+      <div class="win-stat-val" id="res-time">—</div>
+      <div class="win-stat-lbl">Time</div>
+    </div>
+    <div class="win-stat">
+      <div class="win-stat-val" id="res-score">—</div>
+      <div class="win-stat-lbl">Score</div>
+    </div>
+  </div>
+
+  <div class="win-msg">
+    You unlocked the upload portal.<br>
+    <strong>Share your best moments from NMIMS Techfest 2026</strong> with the community!
+  </div>
+
+  <div class="win-actions">
+    <a href="https://drive.google.com/drive/folders/1FaSGMvCw0Xpq_etclZFdSF3GwZVw0Bt7?usp=sharing"
+       target="_blank" class="btn upload">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/>
+        <line x1="12" y1="3" x2="12" y2="15"/>
+      </svg>
+      UPLOAD YOUR MEMORIES
+    </a>
+    <button class="btn outline" id="btn-replay">PLAY AGAIN</button>
+  </div>
+
+  <div class="divider" style="max-width:280px;margin-top:1.5rem;"></div>
+  <div style="font-size:0.58rem;color:var(--text-dim);margin-top:0.5rem;letter-spacing:0.12em;">NMIMS TECHFEST 2026 &nbsp;·&nbsp; NMIMS UNIVERSITY</div>
+</section>
+
+<script>
+  const EMOJIS = ['⚙️','🤖','💡','🔬','🛰️','🔭','💻','🧬'];
+  const SYMBOLS = [...EMOJIS, ...EMOJIS];
+
+  let flipped = [], matched = 0, moves = 0, locked = false;
+  let startTime = null, timerInterval = null;
+
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function show(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  function bootSequence() {
+    document.querySelectorAll('.boot-line').forEach((l, i) => {
+      setTimeout(() => l.classList.add('done'), 250 + i * 260);
+    });
+  }
+
+  function buildGrid() {
+    const grid = document.getElementById('card-grid');
+    grid.innerHTML = '';
+    flipped = []; matched = 0; moves = 0; locked = false;
+    clearInterval(timerInterval);
+    startTime = null;
+
+    document.getElementById('hud-moves').textContent = '0';
+    document.getElementById('hud-matched').textContent = '0 / 8';
+    document.getElementById('hud-time').textContent = '0s';
+    document.getElementById('status-line').innerHTML = '&nbsp;';
+
+    shuffle(SYMBOLS).forEach(sym => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.dataset.sym = sym;
+      card.innerHTML = `<div class="card-inner">
+        <div class="card-face card-back"></div>
+        <div class="card-face card-front">${sym}</div>
+      </div>`;
+      card.addEventListener('click', () => onCardClick(card));
+      grid.appendChild(card);
+    });
+  }
+
+  function startTimer() {
+    startTime = Date.now();
+    timerInterval = setInterval(() => {
+      document.getElementById('hud-time').textContent =
+        Math.floor((Date.now() - startTime) / 1000) + 's';
+    }, 500);
+  }
+
+  function onCardClick(card) {
+    if (locked || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+    if (!startTime) startTimer();
+    card.classList.add('flipped');
+    flipped.push(card);
+    if (flipped.length === 2) {
+      moves++;
+      document.getElementById('hud-moves').textContent = moves;
+      locked = true;
+      checkMatch();
+    }
+  }
+
+  function checkMatch() {
+    const [a, b] = flipped;
+    if (a.dataset.sym === b.dataset.sym) {
+      a.classList.add('matched'); b.classList.add('matched');
+      a.classList.remove('flipped'); b.classList.remove('flipped');
+      matched++;
+      document.getElementById('hud-matched').textContent = matched + ' / 8';
+      document.getElementById('status-line').textContent = '> MATCH CONFIRMED';
+      flipped = []; locked = false;
+      if (matched === 8) { clearInterval(timerInterval); setTimeout(showWin, 600); }
+    } else {
+      a.classList.add('wrong'); b.classList.add('wrong');
+      document.getElementById('status-line').textContent = '> NO MATCH — RETRY';
+      setTimeout(() => {
+        a.classList.remove('flipped','wrong');
+        b.classList.remove('flipped','wrong');
+        flipped = []; locked = false;
+        document.getElementById('status-line').innerHTML = '&nbsp;';
+      }, 900);
+    }
+  }
+
+  function showWin() {
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const score = Math.max(100, 10000 - moves * 80 - elapsed * 10);
+    document.getElementById('res-moves').textContent = moves;
+    document.getElementById('res-time').textContent = elapsed + 's';
+    document.getElementById('res-score').textContent = score;
+    show('screen-win');
+    spawnParticles();
+  }
+
+  function spawnParticles() {
+    const colors = ['#e8000f','#ff4444','#ff0000','#ffffff','#ffcccc'];
+    const s = document.createElement('style');
+    s.textContent = `@keyframes fall {
+      0%   { transform:translateY(0) rotate(0deg); opacity:1; }
+      100% { transform:translateY(110vh) rotate(720deg); opacity:0; }
+    }`;
+    document.head.appendChild(s);
+    for (let i = 0; i < 45; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const sz = 4 + Math.random() * 6;
+      p.style.cssText = `
+        left:${Math.random()*100}vw; top:-10px;
+        width:${sz}px; height:${sz}px;
+        background:${colors[Math.floor(Math.random()*colors.length)]};
+        border-radius:${Math.random()>0.5?'50%':'2px'};
+        animation:fall ${1.2+Math.random()*1.6}s ease-in ${Math.random()*0.9}s forwards;
+      `;
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 3200);
+    }
+  }
+
+  document.querySelectorAll('.back-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      clearInterval(timerInterval);
+      startTime = null;
+      show(btn.dataset.to);
+    });
+  });
+
+  document.getElementById('btn-play').addEventListener('click', () => {
+    buildGrid();
+    show('screen-game');
+  });
+
+  document.getElementById('btn-replay').addEventListener('click', () => {
+    buildGrid();
+    show('screen-game');
+  });
+
+  bootSequence();
+</script>
+</body>
+</html>
